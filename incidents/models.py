@@ -66,7 +66,7 @@ class Profile(models.Model):
     hide_closed = models.BooleanField(default=False)
 
     def __unicode__(self):
-        return u"Profile for user '{}'".format(self.user)
+        return "Profile for user '{}'".format(self.user)
 
 # Audit trail ================================================================
 
@@ -80,11 +80,11 @@ class Log(models.Model):
 
     def __unicode__(self):
         if self.incident:
-            return u"[%s] %s %s (%s)" % (self.when, self.what, self.incident, self.who)
+            return "[%s] %s %s (%s)" % (self.when, self.what, self.incident, self.who)
         elif self.comment:
-            return u"[%s] %s comment on %s (%s)" % (self.when, self.what, self.comment.incident, self.who)
+            return "[%s] %s comment on %s (%s)" % (self.when, self.what, self.comment.incident, self.who)
         else:
-            return u"[%s] %s (%s)" % (self.when, self.what, self.who)
+            return "[%s] %s (%s)" % (self.when, self.what, self.who)
 
 
 class LabelGroup(models.Model):
@@ -116,7 +116,7 @@ class BusinessLine(models.Model):
             parent = parent.parent
 
         ret.reverse()
-        return u" > ".join(ret)
+        return " > ".join(ret)
 
     class Meta:
         ordering = ["parent__name", "name"]
@@ -297,7 +297,7 @@ class Comments(models.Model):
         verbose_name_plural = 'comments'
 
     def __unicode__(self):
-        return u"Comment for incident %s" % self.incident.id
+        return "Comment for incident %s" % self.incident.id
 
     @classmethod
     def create_diff_comment(cls, incident, data, user):
@@ -335,7 +335,7 @@ class Comments(models.Model):
                 if new == "B":
                     new = 'Blocked'
 
-                comments += u'Changed "%s" from "%s" to "%s"; ' % (label, old, new)
+                comments += 'Changed "%s" from "%s" to "%s"; ' % (label, old, new)
 
         if comments:
             Comments.objects.create(

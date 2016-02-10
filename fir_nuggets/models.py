@@ -21,7 +21,7 @@ class Nugget(models.Model):
     found_by = models.ForeignKey(User)
 
     def __unicode__(self):
-        return u"Nugget: {} in {} ({})".format(self.source, self.incident, self.interpretation)
+        return "Nugget: {} in {} ({})".format(self.source, self.incident, self.interpretation)
 
 
 class NuggetForm(forms.ModelForm):

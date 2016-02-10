@@ -35,7 +35,7 @@ class File(OneLinkableModel):
     date = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):
-        return unicode(self.file.name)
+        return str(self.file.name)
 
     def getfilename(self):
         return os.path.basename(self.file.name)

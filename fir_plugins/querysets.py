@@ -12,7 +12,7 @@ def mul_it(it1, it2):
     Element-wise iterables multiplications.
     '''
     assert len(it1) == len(it2), "Can not element-wise multiply iterables of different length."
-    return map(mul, it1, it2)
+    return list(map(mul, it1, it2))
 
 
 def chain_sing(*iterables_or_items):
@@ -49,9 +49,9 @@ class IableSequence(object):
     def __iter__(self):
         return chain(*self.iables)
 
-    def __nonzero__(self):
+    def __bool__(self):
         try:
-            iter(self).next()
+            next(iter(self))
         except StopIteration:
             return False
         return True
@@ -64,7 +64,7 @@ class IableSequence(object):
         it = self.iables.__iter__()
         try:
             while stop > start:
-                i = it.next()
+                i = next(it)
                 i_len = len(i)
                 if i_len > start:
                     # no problem with 'stop' being too big
@@ -81,7 +81,7 @@ class IableSequence(object):
         Does not support negative indices.
         '''
         # params validation
-        if not isinstance(key, (slice, int, long)):
+        if not isinstance(key, (slice, int)):
             raise TypeError
         assert (
             (not isinstance(key, slice) and (key >= 0)) or
@@ -177,10 +177,10 @@ class QuerySetSequence(IableSequence):
         # comparator gets the first non-zero value of the field comparison
         # results taking into account reverse order for fields prefixed with '-'
         def comparator(i1, i2):
-            return dropwhile(
+            return next(dropwhile(
                 __not__,
-                mul_it(map(cmp, fields_getter(i1), fields_getter(i2)), reverses)
-            ).next()
+                mul_it(list(map(cmp, fields_getter(i1), fields_getter(i2))), reverses)
+            ))
 
         # return new sorted list
         return sorted(self.collapse(), cmp=comparator)
@@ -213,7 +213,7 @@ class QuerySetSequence(IableSequence):
 
         Does not modify original QuerySetSequence.
         '''
-        not_empty_qss = filter(None, qss if qss else self.iables)
+        not_empty_qss = [_f for _f in qss if qss else self.iables if _f]
         if not len(not_empty_qss):
             return EmptyQuerySet()
         if len(not_empty_qss) == 1:
@@ -226,10 +226,7 @@ class QuerySetSequence(IableSequence):
         '''
         # each Query set is cloned separately
         return self._simplify(
-            map(
-                lambda qs:
-                qs._filter_or_exclude(negate, *args, **kwargs), self.iables
-            )
+            [qs._filter_or_exclude(negate, *args, **kwargs) for qs in self.iables]
         )
 
     def exists(self):
